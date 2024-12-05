@@ -94,6 +94,7 @@ main :: proc() {
     fmt.println("Error reading file");
     return;
   }
+  defer delete(input);
 
   fmt.printf("Answer is: %d", find_mul(input));
 }

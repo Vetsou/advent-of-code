@@ -55,6 +55,7 @@ main :: proc() {
     fmt.println("Error reading file");
     return;
   }
+  defer delete(input);
 
   safe_reports := 0;
 
