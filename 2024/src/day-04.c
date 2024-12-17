@@ -8,6 +8,10 @@
 #define XMAS_LEN 4
 #define INPUT_FILE "src/input/input04.txt"
 
+bool is_outside_bounds(int x, int y) {
+    return x >= WIDTH || x < 0 || y >= HEIGHT || y < 0;
+}
+
 int check_xmas(int x, int y, int x_dir, int y_dir, char **data) {
     const char *xmas_word = "XMAS";
 
@@ -15,7 +19,7 @@ int check_xmas(int x, int y, int x_dir, int y_dir, char **data) {
         int new_x = x + i * x_dir;
         int new_y = y + i * y_dir;
 
-        if (new_x >= WIDTH || new_x < 0 || new_y >= HEIGHT || new_y < 0) {
+        if (is_outside_bounds(new_x, new_y)) {
             return 0;
         }
 
@@ -33,7 +37,7 @@ int check_mas(int x, int y, char **data) {
         int x_dir2 = x + CROSS_DIRS[i + 1][0];
         int y_dir2 = y + CROSS_DIRS[i + 1][1];
 
-        if (is_in_bounds(x_dir1, y_dir1, WIDTH, HEIGHT) || is_in_bounds(x_dir2, y_dir2, WIDTH, HEIGHT)) {
+        if (is_outside_bounds(x_dir1, y_dir1) || is_outside_bounds(x_dir2, y_dir2)) {
             return 0;
         }
 

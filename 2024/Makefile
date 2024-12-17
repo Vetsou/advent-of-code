@@ -11,6 +11,7 @@
 SRC_PATH ?= src
 BIN_PATH ?= bin
 
+LIB_PATH := $(SRC_PATH)/lib
 INC_PATH := $(SRC_PATH)/include
 
 # SYS CONFIG =========================================================================================
@@ -27,7 +28,7 @@ DAY_DEP := $(BIN_PATH)/day-$(DAY).d
 TARGET := $(BIN_PATH)/day-$(DAY).exe
 
 LIB_SRC := $(wildcard $(LIB_PATH)/*.c)
-LIB_OBJ := $(LIB_SRC:$(SRC_PATH)/lib/%.c=$(BIN_PATH)/%.o)
+LIB_OBJ := $(LIB_SRC:$(LIB_PATH)/%.c=$(BIN_PATH)/%.o)
 
 # COMPILER ===========================================================================================
 
@@ -40,13 +41,13 @@ CFLAGS := -std=c99 $(WARN_FLAGS) -I$(INC_PATH) -MMD -MP
 
 # TARGETS ============================================================================================
 
-$(TARGET): $(DAY_OBJ)
+$(TARGET): $(DAY_OBJ) $(LIB_OBJ)
 	$(CC) $(CFLAGS) $(DEBUG_FLAGS) -o $@ $^
 
 $(DAY_OBJ): $(DAY_SRC) $(INC_PATH)/aoc.h
 	$(CC) $(CFLAGS) $(DEBUG_FLAGS) -c $< -o $@ -MF $(DAY_DEP)
 
-$(BIN_PATH)/%.o: $(SRC_PATH)/lib/%.c
+$(BIN_PATH)/%.o: $(LIB_PATH)/%.c
 	$(CC) $(CFLAGS) $(DEBUG_FLAGS) -c $< -o $@
 
 all: setup $(TARGET)
@@ -74,6 +75,12 @@ day3:
 day4:
 	@$(MAKE) DAY=04 run
 
+day7:
+	@$(MAKE) DAY=07 run
+
+day8:
+	@$(MAKE) DAY=08 run
+
 # ====================================================================================================
 
-.PHONY: all clean setup run day2
+.PHONY: all clean setup run

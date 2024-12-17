@@ -4,11 +4,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 // Libraries
 #include <cmap.h>
 
-int DIRS[8][2] = {
+const int DIRS[8][2] = {
     { 0,  1},
     { 0, -1},
     { 1,  0},
@@ -19,14 +20,14 @@ int DIRS[8][2] = {
     {-1, -1}
 };
 
-int CARDINAL_DIRS[4][2] = {
+const int CARDINAL_DIRS[4][2] = {
     { 0,  1},
     { 0, -1},
     { 1,  0},
     {-1,  0} 
 };
 
-int CROSS_DIRS[4][2] = {
+const int CROSS_DIRS[4][2] = {
     { 1,  1},
     {-1, -1}, 
     { 1, -1},
@@ -40,6 +41,17 @@ bool is_in_bounds(int x, int y, int width, int height);
 // Reads file filename and saves the result into 'data_buffer'
 int read_input(const char *filename, char **data_buffer);
 
+// Splits the 'str' by 'delim'. Returns the number of slices in 'count'.
+char** split_string(
+    const char* str,
+    const char* delim_list,
+    int* count,
+    int max_count
+);
+
+// Frees the split_str ptr and the elements it contains.
+void free_split_str(char **split_str, int count);
+
 // Generates a 2d array from AoC string input
 int array2d_from_input(
     int width,
@@ -52,10 +64,20 @@ int array2d_from_input(
 // Frees the 2d array
 void array2d_free(char ***buffer, int height);
 
+// Allocates a new array of ints created from 'str_arr'.
+int* str_array_to_int_array(char **str_arr, int count);
+
+// Allocates a new array of ints created from 'str_arr'.
+uint64_t* str_array_to_int64_array(char **str_arr, int count);
+
+
+
+
+
 #ifdef AOC_IMPLEMENTATION
 
 bool is_in_bounds(int x, int y, int width, int height) {
-    return x >= width || x < 0 || y >= height || y < 0;
+    return x >= 0 && x < width && y >= 0 && y < height;
 }
 
 int read_input(const char *filename, char **data_buffer) {
@@ -81,6 +103,34 @@ int read_input(const char *filename, char **data_buffer) {
 
     fclose(file);
     return file_size;
+}
+
+char** split_string(
+    const char* str,
+    const char* delim_list,
+    int* count,
+    int max_count
+) {
+    char* copy = strdup(str);
+    char** tokens = malloc(sizeof(char*) * max_count);
+
+    *count = 0;
+    char *tok_buff;
+
+    char* token = strtok_s(copy, delim_list, &tok_buff);
+    while (token && *count < max_count) {
+        tokens[*count] = strdup(token);
+        (*count)++;
+        token = strtok_s(NULL, delim_list, &tok_buff);
+    }
+
+    free(copy);
+    return tokens;
+}
+
+void free_split_str(char **split_str, int count) {
+    for (int i = 0; i < count; i++) free(split_str[i]);
+    free(split_str);
 }
 
 int array2d_from_input(
@@ -123,6 +173,19 @@ void array2d_free(char ***buffer, int height) {
     free((*buffer));
 }
 
-#endif // AOC_IMPLEMENTATION
+int* str_array_to_int_array(char **str_arr, int count) {
+    int *int_arr = (int *)malloc(sizeof(*int_arr) * count);
 
+    for (int i = 0; i < count; i++) int_arr[i] = atoi(str_arr[i]);
+    return int_arr;
+}
+
+uint64_t* str_array_to_int64_array(char **str_arr, int count) {
+    uint64_t *int_arr = (uint64_t *)malloc(sizeof(*int_arr) * count);
+
+    for (int i = 0; i < count; i++) int_arr[i] = atoll(str_arr[i]);
+    return int_arr;
+}
+
+#endif // AOC_IMPLEMENTATION
 #endif // AOC_H
